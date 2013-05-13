@@ -11,42 +11,24 @@ namespace Blaster
     {
         readonly GraphicsDeviceManager _graphics;
         SpriteBatch _spriteBatch;
-        Texture2D _backgroundTexture;
-        Texture2D _tankTexture;
-        Texture2D _cannonTexture;
-        Texture2D _bulletTexture;
-        Texture2D _alienTexture;
-        Texture2D _explodeTexture;
-
-        Vector2 _tankPosition;
-        Vector2 _cannonPosition;
-        Vector2 _bulletPosition;
-        Vector2 _alienPosition;
-
-        Vector2 _bulletDirection;
-
-        float _cannonAngle;
-        float _bulletAngle;
-
         int _screenWidth;
         int _screenHeight;
 
-        bool _bulletFlying;
-        bool _alienFlying;
-
-        Color[,] _bulletColorArray;
-        Color[,] _alienColorArray;
-
-        readonly List<ParticleData> _particleList = new List<ParticleData>();
-
-        readonly Random _randomizer = new Random();
-
-        SpriteFont _font;
-
-        int _score;
+        private Background _background;
+        private Tank _tank;
+        private Cannon _cannon;
+        private Bullet _bullet;
+        private Alien _alien;
+        private Explosion _explosion;
+        private List<ParticleData> _particleList;
+        private SpriteFont _font;
 
         private SoundEffect _launchSound;
         private SoundEffect _hitSound;
+
+        private readonly Random _randomizer = new Random();
+        int _score;
+
         public Blaster()
         {
             _graphics = new GraphicsDeviceManager(this);
@@ -58,36 +40,45 @@ namespace Blaster
             _screenWidth = GraphicsDevice.Viewport.Width;
             _screenHeight = GraphicsDevice.Viewport.Height;
 
+            _background = new Background();
+            _tank = new Tank();
+            _cannon = new Cannon();
+            _bullet = new Bullet();
+            _alien = new Alien();
+            _explosion = new Explosion();
+            _particleList = new List<ParticleData>();
+
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            _backgroundTexture = Content.Load<Texture2D>("space1_background");
 
-            _tankTexture = Content.Load<Texture2D>("tank");
-            _tankPosition = new Vector2(255, 370);
+            _background.Texture = Content.Load<Texture2D>("space1_background");
 
-            _cannonTexture = Content.Load<Texture2D>("cannon");
-            _cannonPosition = new Vector2(_tankPosition.X + 45, _tankPosition.Y + 15);
-            _cannonAngle = -MathHelper.PiOver2;
+            _tank.Texture = Content.Load<Texture2D>("tank");
+            _tank.Position = new Vector2(255, 370);
 
-            _bulletTexture = Content.Load<Texture2D>("bullet");
-            _bulletPosition = new Vector2(_cannonPosition.X + 2, _cannonPosition.Y);
-            _bulletColorArray = TextureTo2DArray(_bulletTexture);
-            _bulletAngle = _cannonAngle;
+            _cannon.Texture = Content.Load<Texture2D>("cannon");
+            _cannon.Position = new Vector2(_tank.Position.X + 45, _tank.Position.Y + 15);
+            _cannon.Angle = -MathHelper.PiOver2;
 
-            _alienTexture = Content.Load<Texture2D>("alien1");
-            _alienPosition = new Vector2(50, 0);
-            _alienColorArray = TextureTo2DArray(_alienTexture);
+            _bullet.Texture = Content.Load<Texture2D>("bullet");
+            _bullet.Position = new Vector2(_cannon.Position.X + 2, _cannon.Position.Y);
+            _bullet.ColorArray = TextureTo2DArray(_bullet.Texture);
+            _bullet.Angle = _cannon.Angle;
 
-            _explodeTexture = Content.Load<Texture2D>("explosion");
+            _alien.Texture = Content.Load<Texture2D>("alien1");
+            _alien.Position = new Vector2(50, 0);
+            _alien.ColorArray = TextureTo2DArray(_alien.Texture);
+
+            _explosion.Texture = Content.Load<Texture2D>("explosion");
 
             _font = Content.Load<SpriteFont>("scorefont");
 
-            _bulletFlying = false;
-            _alienFlying = true;
+            _bullet.IsFlying = false;
+            _alien.IsFlying = true;
             _score = 0;
 
             _launchSound = Content.Load<SoundEffect>("launch");
@@ -144,51 +135,51 @@ namespace Blaster
         private void DrawBackground()
         {
             var screenRectangle = new Rectangle(0, 0, _screenWidth, _screenHeight);
-            _spriteBatch.Draw(_backgroundTexture, screenRectangle, Color.White);
+            _spriteBatch.Draw(_background.Texture, screenRectangle, Color.White);
         }
 
         private void DrawTank()
         {
-            _spriteBatch.Draw(_tankTexture, _tankPosition, null, Color.White, 0, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
+            _spriteBatch.Draw(_tank.Texture, _tank.Position, null, Color.White, 0, new Vector2(0, 0), 0.5f, SpriteEffects.None, 0);
         }
 
         private void DrawCannon()
         {
-            _spriteBatch.Draw(_cannonTexture, _cannonPosition, null, Color.White, _cannonAngle, new Vector2(0, 0), 0.18f, SpriteEffects.None, 0);
+            _spriteBatch.Draw(_cannon.Texture, _cannon.Position, null, Color.White, _cannon.Angle, new Vector2(0, 0), 0.18f, SpriteEffects.None, 0);
         }
 
         private void DrawBullet()
         {
-            if (_bulletFlying)
+            if (_bullet.IsFlying)
             {
-                _spriteBatch.Draw(_bulletTexture, _bulletPosition, null, Color.White, _cannonAngle, new Vector2(0, 0), 0.15f, SpriteEffects.None, 0);
+                _spriteBatch.Draw(_bullet.Texture, _bullet.Position, null, Color.White, _cannon.Angle, new Vector2(0, 0), 0.15f, SpriteEffects.None, 0);
             }
         }
 
         private void UpdateBullet()
         {
-            if (_bulletFlying)
+            if (_bullet.IsFlying)
             {
-                _bulletPosition += _bulletDirection * 8;
+                _bullet.Position += _bullet.Direction * 8;
             }
         }
 
         private void DrawAlien()
         {
-            if (_alienFlying)
-                _spriteBatch.Draw(_alienTexture, _alienPosition, null, Color.White, 0, new Vector2(0, 0), 1.0f, SpriteEffects.None, 0);
+            if (_alien.IsFlying)
+                _spriteBatch.Draw(_alien.Texture, _alien.Position, null, Color.White, 0, new Vector2(0, 0), 1.0f, SpriteEffects.None, 0);
         }
 
         private void UpdateAlien()
         {
-            if (_alienPosition.Y > _screenHeight)
+            if (_alien.Position.Y > _screenHeight)
             {
-                _alienPosition.X = _randomizer.Next(_screenWidth);
-                _alienPosition.Y = 0;
+                _alien.Position.X = _randomizer.Next(_screenWidth);
+                _alien.Position.Y = 0;
             }
 
-            if (_alienFlying)
-                _alienPosition.Y += 2;
+            if (_alien.IsFlying)
+                _alien.Position.Y += 2;
         }
 
         private void DrawExplosion()
@@ -196,7 +187,7 @@ namespace Blaster
             for (int i = 0; i < _particleList.Count; i++)
             {
                 ParticleData particle = _particleList[i];
-                _spriteBatch.Draw(_explodeTexture, particle.Position, null, particle.ModColor, i, new Vector2(256, 256), particle.Scaling, SpriteEffects.None, 1);
+                _spriteBatch.Draw(_explosion.Texture, particle.Position, null, particle.ModColor, i, new Vector2(256, 256), particle.Scaling, SpriteEffects.None, 1);
             }
         }
 
@@ -205,34 +196,34 @@ namespace Blaster
             var keybState = Keyboard.GetState();
             if (keybState.IsKeyDown(Keys.Left))
             {
-                if (_cannonAngle > -3)
-                    _cannonAngle -= 0.02f;
+                if (_cannon.Angle > -3)
+                    _cannon.Angle -= 0.02f;
             }
             if (keybState.IsKeyDown(Keys.Right))
             {
-                if (_cannonAngle < -0.5)
-                    _cannonAngle += 0.02f;
+                if (_cannon.Angle < -0.5)
+                    _cannon.Angle += 0.02f;
             }
 
             if (keybState.IsKeyDown(Keys.Enter) || keybState.IsKeyDown(Keys.Space))
             {
                 _launchSound.Play();
-                _bulletFlying = true;
-                _bulletAngle = _cannonAngle;
-                _bulletPosition = _cannonPosition;
+                _bullet.IsFlying = true;
+                _bullet.Angle = _cannon.Angle;
+                _bullet.Position = _cannon.Position;
                  var up = new Vector2(0, -1);
-                 var rotMatrix = Matrix.CreateRotationZ(_bulletAngle + MathHelper.PiOver2);
-                _bulletDirection = Vector2.Transform(up, rotMatrix);
+                 var rotMatrix = Matrix.CreateRotationZ(_bullet.Angle + MathHelper.PiOver2);
+                _bullet.Direction = Vector2.Transform(up, rotMatrix);
             }
         }
 
         private void IsOutScreen()
         {
-            if (_bulletPosition.Y < 0)
-                _bulletFlying = false;
+            if (_bullet.Position.Y < 0)
+                _bullet.IsFlying = false;
         }
 
-        private Vector2 TexturesCollide(Color[,] tex1, Matrix mat1, Color[,] tex2, Matrix mat2)
+        private static Vector2 TexturesCollide(Color[,] tex1, Matrix mat1, Color[,] tex2, Matrix mat2)
         {
             var mat1To2 = mat1 * Matrix.Invert(mat2);
             var width1 = tex1.GetLength(0);
@@ -269,13 +260,13 @@ namespace Blaster
             return new Vector2(-1, -1);
         }
 
-        private Color[,] TextureTo2DArray(Texture2D texture)
+        private static Color[,] TextureTo2DArray(Texture2D texture)
         {
             var colors1D = new Color[texture.Width * texture.Height];
             texture.GetData(colors1D);
 
             var colors2D = new Color[texture.Width, texture.Height];
-            for (int x = 0; x < texture.Width; x++)
+            for (var x = 0; x < texture.Width; x++)
                 for (int y = 0; y < texture.Height; y++)
                     colors2D[x, y] = colors1D[x + y * texture.Width];
 
@@ -284,24 +275,24 @@ namespace Blaster
 
         private void CheckCollision(GameTime gameTime)
         {
-            var bulletMat = Matrix.CreateRotationZ(_bulletAngle) * Matrix.CreateScale(0.15f) * Matrix.CreateTranslation(_bulletPosition.X, _bulletPosition.Y, 0);
-            var alienMat = Matrix.CreateTranslation(_alienPosition.X, _alienPosition.Y, 0);
-            var collisionPoint = TexturesCollide(_bulletColorArray, bulletMat, _alienColorArray, alienMat);
+            var bulletMat = Matrix.CreateRotationZ(_bullet.Angle) * Matrix.CreateScale(0.15f) * Matrix.CreateTranslation(_bullet.Position.X, _bullet.Position.Y, 0);
+            var alienMat = Matrix.CreateTranslation(_alien.Position.X, _alien.Position.Y, 0);
+            var collisionPoint = TexturesCollide(_bullet.ColorArray, bulletMat, _alien.ColorArray, alienMat);
 
-            if (collisionPoint.X > -1 && _bulletFlying && _alienFlying)
+            if (collisionPoint.X > -1 && _bullet.IsFlying && _alien.IsFlying)
             {
                 _hitSound.Play();
                 _score++;
-                _bulletFlying = false;
-                _alienPosition.X = _randomizer.Next(_screenWidth);
-                _alienPosition.Y = 0;
+                _bullet.IsFlying = false;
+                _alien.Position.X = _randomizer.Next(_screenWidth);
+                _alien.Position.Y = 0;
                 AddExplosion(collisionPoint, 10, 150.0f, 3000.0f, gameTime);
             }
         }
 
         private void AddExplosion(Vector2 explosionPos, int numberOfParticles, float size, float maxAge, GameTime gameTime)
         {
-            for (int i = 0; i < numberOfParticles; i++)
+            for (var i = 0; i < numberOfParticles; i++)
                 AddExplosionParticle(explosionPos, size, maxAge, gameTime);
         }
 

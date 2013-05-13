@@ -133,6 +133,7 @@
     <Compile Include="Background.cs" />
     <Compile Include="Bullet.cs" />
     <Compile Include="Cannon.cs" />
+    <Compile Include="Explosion.cs" />
     <Compile Include="GameObject.cs" />
     <Compile Include="ParticleData.cs" />
     <Compile Include="Program.cs" />

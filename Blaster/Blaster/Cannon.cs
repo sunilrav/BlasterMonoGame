@@ -2,5 +2,6 @@
 {
     class Cannon : GameObject
     {
+        public float Angle;
     }
 }

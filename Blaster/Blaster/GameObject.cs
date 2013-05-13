@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace Blaster
 {
-    class GameObject
+    public class GameObject
     {
         public Vector2 Position;
         public Texture2D Texture;
