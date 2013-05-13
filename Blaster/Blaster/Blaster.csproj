@@ -129,10 +129,16 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Alien.cs" />
+    <Compile Include="Background.cs" />
+    <Compile Include="Bullet.cs" />
+    <Compile Include="Cannon.cs" />
+    <Compile Include="GameObject.cs" />
     <Compile Include="ParticleData.cs" />
     <Compile Include="Program.cs" />
-    <Compile Include="Game1.cs" />
+    <Compile Include="Blaster.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tank.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
