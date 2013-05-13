@@ -146,7 +146,6 @@
     <AppxManifest Include="Package.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <None Include="Blaster_TemporaryKey.pfx" />
     <Content Include="Content\alien1.xnb" />
     <Content Include="Content\bullet.xnb" />
     <Content Include="Content\cannon.xnb" />
@@ -166,6 +165,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Libs\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Blaster_TemporaryKey.pfx" />
   </ItemGroup>
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '11.0' ">
     <VisualStudioVersion>11.0</VisualStudioVersion>

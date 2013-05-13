@@ -27,7 +27,9 @@ namespace Blaster
         private SoundEffect _hitSound;
 
         private readonly Random _randomizer = new Random();
-        int _score;
+        private int _score;
+        private int _tankPositionX;
+        private int _tankPositionY;
 
         public Blaster()
         {
@@ -48,6 +50,8 @@ namespace Blaster
             _explosion = new Explosion();
             _particleList = new List<ParticleData>();
 
+            _tankPositionX = _screenWidth/2;
+            _tankPositionY = _screenHeight - 193;
             base.Initialize();
         }
 
@@ -58,7 +62,7 @@ namespace Blaster
             _background.Texture = Content.Load<Texture2D>(Constants.BackgroundImageName);
 
             _tank.Texture = Content.Load<Texture2D>(Constants.TankImageName);
-            _tank.Position = new Vector2(255, 370);
+            _tank.Position = new Vector2(_tankPositionX, _tankPositionY);
 
             _cannon.Texture = Content.Load<Texture2D>(Constants.CannonImageName);
             _cannon.Position = new Vector2(_tank.Position.X + 45, _tank.Position.Y + 15);
