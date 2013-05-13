@@ -55,34 +55,34 @@ namespace Blaster
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
-            _background.Texture = Content.Load<Texture2D>("space1_background");
+            _background.Texture = Content.Load<Texture2D>(Constants.BackgroundImageName);
 
-            _tank.Texture = Content.Load<Texture2D>("tank");
+            _tank.Texture = Content.Load<Texture2D>(Constants.TankImageName);
             _tank.Position = new Vector2(255, 370);
 
-            _cannon.Texture = Content.Load<Texture2D>("cannon");
+            _cannon.Texture = Content.Load<Texture2D>(Constants.CannonImageName);
             _cannon.Position = new Vector2(_tank.Position.X + 45, _tank.Position.Y + 15);
             _cannon.Angle = -MathHelper.PiOver2;
 
-            _bullet.Texture = Content.Load<Texture2D>("bullet");
+            _bullet.Texture = Content.Load<Texture2D>(Constants.BulletImageName);
             _bullet.Position = new Vector2(_cannon.Position.X + 2, _cannon.Position.Y);
             _bullet.ColorArray = TextureTo2DArray(_bullet.Texture);
             _bullet.Angle = _cannon.Angle;
 
-            _alien.Texture = Content.Load<Texture2D>("alien1");
+            _alien.Texture = Content.Load<Texture2D>(Constants.AlienImageName);
             _alien.Position = new Vector2(50, 0);
             _alien.ColorArray = TextureTo2DArray(_alien.Texture);
 
-            _explosion.Texture = Content.Load<Texture2D>("explosion");
+            _explosion.Texture = Content.Load<Texture2D>(Constants.ExplosionImageName);
 
-            _font = Content.Load<SpriteFont>("scorefont");
+            _font = Content.Load<SpriteFont>(Constants.ScoreFontName);
 
             _bullet.IsFlying = false;
             _alien.IsFlying = true;
             _score = 0;
 
-            _launchSound = Content.Load<SoundEffect>("launch");
-            _hitSound = Content.Load<SoundEffect>("launch");
+            _launchSound = Content.Load<SoundEffect>(Constants.LaunchSoundName);
+            _hitSound = Content.Load<SoundEffect>(Constants.HitSoundName);
         }
 
         protected override void UnloadContent()
